@@ -1,0 +1,26 @@
+Invoice ID,Product ID,Product Name,Size,Unit Price,Quantity,Total Cost,Invoice Date
+1,14,Morning Dew,M,270.68,2,541.36,2024-10-11
+2,13,Hidden Pathway,S,114.02,4,456.08,2024-10-17
+3,4,Forest Whispers,S,181.56,1,181.56,2024-02-14
+4,1,Birdhouse,M,313.22,3,939.66,2024-12-10
+5,11,Mountain Mist,L,712.04,1,712.04,2024-04-27
+6,10,Cherry Blossom,S,114.65,1,114.65,2024-07-15
+7,3,Ocean Breeze,M,259.2,2,518.4,2024-12-16
+8,17,Echoes of Nature,M,223.57,4,894.28,2024-12-21
+9,10,Cherry Blossom,S,184.9,3,554.7,2024-06-14
+10,15,Dancing Flames,L,571.78,1,571.78,2025-01-19
+11,13,Hidden Pathway,S,165.22,2,330.44,2024-09-14
+12,6,Winter Solstice,L,444.28,3,1332.84,2024-08-25
+13,15,Dancing Flames,L,604.06,2,1208.12,2024-08-20
+14,15,Dancing Flames,L,698.85,4,2795.4,2024-02-06
+15,1,Birdhouse,M,216.83,4,867.32,2024-06-17
+16,12,Golden Horizon,M,342.51,2,685.02,2024-03-20
+17,13,Hidden Pathway,S,140.49,4,561.96,2024-10-05
+18,2,Sunflower Meadow,S,122.94,4,491.76,2024-09-15
+19,8,Desert Bloom,S,109.89,5,549.45,2025-01-09
+20,4,Forest Whispers,S,138.53,1,138.53,2024-05-29
+21,11,Mountain Mist,L,437.0,5,2185.0,2024-07-26
+22,13,Hidden Pathway,S,114.91,3,344.73,2024-08-10
+23,6,Winter Solstice,L,759.43,5,3797.15,2024-07-12
+24,8,Desert Bloom,S,170.22,2,340.44,2025-01-10
+25,12,Golden Horizon,M,273.94,4,1095.76,2024-10-10
