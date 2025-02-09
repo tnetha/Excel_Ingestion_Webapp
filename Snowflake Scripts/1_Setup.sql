@@ -1,0 +1,75 @@
+USE ROLE ACCOUNTADMIN;
+
+-- Create a role for the app
+CREATE ROLE IF NOT EXISTS APP_ROLE;
+grant role APP_ROLE to role ACCOUNTADMIN;
+
+-- Create a database for the app
+CREATE DATABASE IF NOT EXISTS APP_DB;
+
+-- Grant privileges on the database to the app role
+GRANT OWNERSHIP ON DATABASE APP_DB TO ROLE APP_ROLE COPY CURRENT GRANTS;
+
+-- Create a warehouse for the app
+CREATE WAREHOUSE IF NOT EXISTS APP_WAREHOUSE WITH WAREHOUSE_SIZE = 'X-SMALL' WAREHOUSE_TYPE = 'STANDARD' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE;
+
+-- Grant privileges on the warehouse to the app role
+GRANT USAGE ON WAREHOUSE APP_WAREHOUSE TO ROLE APP_ROLE;
+
+
+-- Let's create the schema
+use role app_role;
+use database app_db;
+
+CREATE SCHEMA IF NOT EXISTS APP_SCHEMA;
+
+
+-- Create stage
+CREATE OR REPLACE STAGE APP_SCHEMA.APP_STAGE;
+
+-- Create Invoice table
+CREATE OR REPLACE TABLE APP_SCHEMA.INVOICES (
+    INVOICE_ID INTEGER PRIMARY KEY,
+    PRODUCT_ID INTEGER,
+    PRODUCT_NAME STRING,
+    SIZE STRING,
+    UNIT_PRICE DECIMAL(10,2),
+    QUANTITY INTEGER,
+    TOTAL_COST DECIMAL(10,2),
+    INVOICE_DATE DATE
+);
+
+-- Upload file to internal stage via SnowSight or SnowCLI
+-- I used SnowSight for the sake of time.
+
+-- Copy data from stage to table
+COPY INTO "APP_DB"."APP_SCHEMA"."INVOICES"
+FROM (
+    SELECT $1, $2, $3, $4, $5, $6, $7, $8
+    FROM '@"APP_DB"."APP_SCHEMA"."APP_STAGE"'
+)
+FILES = ('example_invoice_data.csv')
+FILE_FORMAT = (
+    TYPE=CSV,
+    SKIP_HEADER=1,
+    FIELD_DELIMITER=',',
+    TRIM_SPACE=TRUE,
+    FIELD_OPTIONALLY_ENCLOSED_BY='"',
+    REPLACE_INVALID_CHARACTERS=TRUE,
+    DATE_FORMAT=AUTO,
+    TIME_FORMAT=AUTO,
+    TIMESTAMP_FORMAT=AUTO
+)
+ON_ERROR=ABORT_STATEMENT;
+
+
+-- Create blank table for the price lists
+CREATE OR REPLACE TABLE APP_SCHEMA.PRICE_LISTS (
+    SPECIAL STRING,
+    ID INTEGER,
+    NAME STRING,
+    SIZE STRING,
+    MATERIAL_COST DECIMAL(10,2),
+    HOURS_OF_EFFORT INTEGER,
+    LIST_DATE DATE
+);
