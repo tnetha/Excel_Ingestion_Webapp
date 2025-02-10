@@ -38,8 +38,8 @@ def create_session() -> Session:
     return Session.builder.configs(connection_params).create()
 
 # DBT Cloud API and Power BI API details
-DBT_API_URL = ''
-DBT_JOB_STATUS_URL = ''
+DBT_API_URL = 'https://cloud.getdbt.com/api/v2/accounts/143450/jobs/805062/run/'
+DBT_JOB_STATUS_URL = 'https://cloud.getdbt.com/api/v2/accounts/143450/runs/{run_id}/'
 
 # Trigger DBT Cloud job
 def call_dbt_api():
@@ -138,3 +138,34 @@ if uploaded_file is not None:
         upload_to_snowflake(uploaded_file, SNOWFLAKE_STAGE)
 
 st.markdown("""---""")
+
+# Create a button
+st.title("DBT Model Run")
+
+if st.button("Build dbt models"):
+    # Trigger the DBT job
+    dbt_response = call_dbt_api()
+    if dbt_response:
+        run_id = dbt_response['data']['id']
+        st.write(f"dbt job triggered successfully. Run ID: {run_id}")
+
+        # Check job status periodically
+        job_complete = False
+        while not job_complete:
+            status_response = check_dbt_job_status(run_id)
+            if status_response:
+                job_status = status_response['data']['is_success']
+                if job_status:
+                    st.write("dbt job completed successfully.")
+                    job_complete = True
+                else:
+                    st.write("dbt job is still running...")
+                    print(job_status)
+                    time.sleep(10)  # Wait for 10 seconds before checking status again
+            else:
+                st.error("Failed to retrieve job status.")
+                break
+
+        # Trigger Power BI refresh if DBT job completed successfully
+        if job_complete:
+            print("Model run completed successfully.")
