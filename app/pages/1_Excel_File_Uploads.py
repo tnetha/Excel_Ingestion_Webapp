@@ -6,7 +6,7 @@ from snowflake.snowpark import Session
 import requests
 import time
 
-st.set_page_config(page_title="CountryMark Contracts File Import", layout="wide")
+st.set_page_config(page_title="Excel File Upload Demo", layout="wide")
 
 def get_connection_params():
     if os.path.isfile("/snowflake/session/token"):
@@ -51,16 +51,7 @@ def call_dbt_api():
         "cause": "Triggered via API"
     }
     response = requests.post(DBT_API_URL, json=body, headers=headers)
-
-    # Print the full URL redirect path
-    if response.history:
-        print("Redirect history:")
-        for resp in response.history:
-            print(resp.url)
-        print("Final destination URL:", response.url)
-    else:
-        print("No redirects, final URL:", response.url)
-        
+    
     if response.status_code == 200:
         return response.json()  # Get the run ID from the response
     else:
@@ -110,13 +101,6 @@ def upload_to_snowflake(file, stage_name):
         # Upload file to Snowflake stage using Snowpark's session.file.put
         session.file.put(f'file://{tmp_file_path}', f'@{stage_name}', auto_compress=False, overwrite=True)
         st.success(f"File '{original_file_name}' uploaded to stage: {stage_name}")
-        
-
-        # Need scoped URL for Snowflake staged file
-        #scoped_url_df = session.sql(f"SELECT BUILD_SCOPED_FILE_URL(@{stage_name},'/{vendor_folder}/{tmp_file_path}') AS scoped_url")
-        #scoped_url = scoped_url_df.collect()[0]['SCOPED_URL']
-        #st.write(f"Scoped URL: {scoped_url}")
-
         # Execute the stored procedure for the vendor
         stored_procedure_name = f"import_prices"
         session.sql(f"CALL {stored_procedure_name}(BUILD_SCOPED_FILE_URL(@{stage_name},'/{actual_file_name}'))").collect()
